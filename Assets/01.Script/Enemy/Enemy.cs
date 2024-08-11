@@ -6,6 +6,7 @@ public abstract class Enemy : MonoBehaviour
 {
     public List<GameObject> lifes;
     public int remainingLife = 4;
+    public GameManager gameManager;
 
     private Vector3 lifeObjectGap = new Vector3(0.5f, 0, 0);
     private string lifePrefabPath = "Prefabs/LifePrefab";
@@ -34,6 +35,26 @@ public abstract class Enemy : MonoBehaviour
 
 
 
+    }
+
+    public Vector3 GetPlayerDirection()
+    {
+        GameObject player = GameObject.Find("Player");
+
+        if (player == null) throw new System.Exception("Cannot find player GameObject");
+
+        gameManager.startPos = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+
+        gameManager.targetPos = new(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y));
+
+        gameManager.PathFinding();
+
+        if (gameManager.FinalNodeList.Count < 1) return Vector3.zero;
+
+        Vector2 targetPos = new(gameManager.FinalNodeList[1].x, gameManager.FinalNodeList[1].y);
+        Vector2 direction = (targetPos - gameManager.startPos).normalized;
+
+        return new Vector3(direction.x, direction.y, 0);
     }
 
     void TriggerExplosion()
