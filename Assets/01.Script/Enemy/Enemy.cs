@@ -10,8 +10,8 @@ public abstract class Enemy : MonoBehaviour
 
     private Vector3 lifeObjectGap = new Vector3(0.5f, 0, 0);
     private string lifePrefabPath = "Prefabs/LifePrefab";
-    private Animator animator;
-    private SpriteRenderer spriteRenderer;
+    protected Animator animator;
+    protected SpriteRenderer spriteRenderer;
 
 
     void Start()
@@ -33,9 +33,10 @@ public abstract class Enemy : MonoBehaviour
             lifes.Add(life);
         }
 
-
-
+        Initialized();
     }
+
+    public abstract void Initialized();
 
     public Vector3 GetPlayerDirection()
     {
@@ -49,12 +50,21 @@ public abstract class Enemy : MonoBehaviour
 
         gameManager.PathFinding();
 
-        if (gameManager.FinalNodeList.Count < 1) return Vector3.zero;
+        if (gameManager.FinalNodeList.Count <= 1) return Vector3.zero;
 
         Vector2 targetPos = new(gameManager.FinalNodeList[1].x, gameManager.FinalNodeList[1].y);
         Vector2 direction = (targetPos - gameManager.startPos).normalized;
 
         return new Vector3(direction.x, direction.y, 0);
+    }
+
+    public Vector3 GetPlayerRawDirection()
+    {
+        GameObject player = GameObject.Find("Player");
+
+        if (player == null) throw new System.Exception("Cannot find player GameObject");
+
+        return (player.transform.position - transform.position).normalized;
     }
 
     void TriggerExplosion()
@@ -71,7 +81,7 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    IEnumerator Kill(Animator animator)
+    public IEnumerator Kill(Animator animator)
     {
         yield return null; 
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
@@ -97,6 +107,9 @@ public abstract class Enemy : MonoBehaviour
     {
         animator.SetTrigger("HitTrigger");
         remainingLife--;
+        OnDamage();
         TriggerExplosion();
     }
+
+    public abstract void OnDamage();
 }

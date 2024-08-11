@@ -81,7 +81,6 @@ public class GameManager : MonoBehaviour
                 FinalNodeList.Add(StartNode);
                 FinalNodeList.Reverse();
 
-                for (int i = 0; i < FinalNodeList.Count; i++) print(i + "¹øÂ°´Â " + FinalNodeList[i].x + ", " + FinalNodeList[i].y);
                 return;
             }
 
